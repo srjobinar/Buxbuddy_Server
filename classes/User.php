@@ -12,6 +12,18 @@ class User extends Model {
 
 	protected $hidden = ['password'];
 
+	// public function group(){
+	// 	return  $this->hasOne('OnlineUser','id');
+	// }
+
+	public function group()
+	    {
+	      return $this->hasMany('UserGroup','userid');
+	    }
+  public function transaction()
+			{
+				return $this->hasMany('UserTransaction','userid');
+			}
 
 
 }

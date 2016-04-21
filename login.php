@@ -1,5 +1,10 @@
 <?php
 
+$json = file_get_contents('php://input');
+$_POST = json_decode($json,TRUE);
+
+$out['values'] = $_POST;
+
 require __DIR__.'/./vendor/autoload.php';
 require './config.php';
 require './classes/boot.php';

@@ -4,10 +4,8 @@ require __DIR__.'/./vendor/autoload.php';
 require './config.php';
 require './helpers/boot.php';
 
-require_once './helpers/OnlineUser.php';
 require_once './helpers/session.php';
-require_once './helpers/User.php';
-require './helpers/functions.php';
+
 
 use Illuminate\Validation\Factory as ValidatorFactory;
 use Symfony\Component\Translation\Translator;
@@ -27,24 +25,26 @@ $messages = getErrorMessages();
 
 if(isset($_POST['type'])){
   $type = $_POST['type'];
+  
   if($type=="login"){
 
-    if($_POST['email']==$admin_email&&$_POST['password']==$admin_password){
-      $session->logIn(1, Session::USER_ADMIN);
-      $session->redirectIfAuth('./admin/index.php','./trainer/index.php','./doctor/index.php','./index.php');
-    }
+    $validator = $factory->make($_POST, ['phone'=>'required','password'=>'required'],$messages);
 
-    $validator = $factory->make($_POST, ['email'=>'required','password'=>'required'],$messages);
     if($validator->passes()) {
-      $u = User::where('email',$_POST['email'])->where('password',$_POST['password'])->first();
+      $u = User::where('phone',$_POST['phone'])->where('password',$_POST['password'])->first();
       if($u){
+        
         $session->logIn($u->id, $u->type);
-        $session->redirectIfAuth('./admin/index.php','./trainer/index.php','./doctor/index.php','./index.php');
+        $out['status'] = "success";
+
       }else{
-        $error = ERROR_INVALID;
+        $out['status'] = "fail";
+        $out['error'] = "invalid credentials.";
+
       }
     }else{
-      $error = ERRROR_VALFAIL;
+        $out['status'] = "fail";
+        $out['error'] = "phone/password missing in data.";
     }
 
   }else if($type=="signup"){
@@ -64,8 +64,9 @@ if(isset($_POST['type'])){
         $error = ERROR_DB;
       }else{
         if($u = User::create($_POST)){
-          $session->logIn($u->id, $u->type);
-          $session->redirectIfAuth('./admin/index.php','./trainer/index.php','./doctor/index.php','./index.php');
+
+        session->logIn($u->id, $u->type);
+          
         }else{
           $error = ERROR_DB;
         }
@@ -74,90 +75,12 @@ if(isset($_POST['type'])){
       $error = ERROR_VALFAIL;
     }
   }
+}else{
+ //type not set
+ $out['status'] = "fail";
+ $out['error'] = "type not set.";
 }
 
+echo json_encode($out,TURE);
+
  ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Autism</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <link href="./static/css/awe.css" rel="stylesheet">
-  <link href="./static/css/player.css" rel="stylesheet">
-  <script type="text/javascript" src="./static/js/jquery.min.js"></script>
-  <script type="text/javascript" src="./static/js/bootstrap.min.js"></script>
-</head>
-<body>
-
-
-<div class="loginpage">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3 col-sm-12">
-        <h1>Autism Community</h1>
-        <h4>Login</h4>
-        <?php
-        if(isset($type)&&$type=="login"){
-          printLoginErrors($error,$validator->messages());
-        }
-         ?>
-        <form class="form-horizontal" action="login.php" method="POST">
-          <input type="hidden" name="type" value="login" />
-          <div class="form-group">
-                  <input class="form-control" placeholder="Email" name="email"  type="email" required>
-          </div>
-                <div class="form-group">
-                  <input class="form-control" placeholder="Password" name="password" type="password" required>
-                </div>
-                <div class="form-group">
-                  <input type="submit" class="btn btn-primary" value="Login"/>
-                </div>
-
-        </form>
-
-        <h4>Sign Up</h4>
-        <?php
-        if(isset($type)&&$type=="signup"){
-          printSignUpErrors($error,$validator->messages());
-        } ?>
-
-        <form class="form-horizontal" action="login.php" method="POST">
-          <input type="hidden" name="type" value="signup" />
-          <div class="form-group">
-                  <input class="form-control" placeholder="Name" name="name"  type="text" required>
-          </div>
-          <div class="form-group">
-                  <input class="form-control" placeholder="Email" name="email"  type="email" required>
-          </div>
-          <div class="form-group">
-                  <input class="form-control" placeholder="Phone" name="phone"  type="text" required>
-          </div>
-          <div class="form-group">
-                  <input class="form-control" placeholder="Address" name="address"  type="text" required>
-          </div>
-                <div class="form-group">
-                  <input class="form-control" placeholder="Password" name="password" type="password" required>
-                </div>
-                <div class="form-group">
-                  <input type="submit" class="btn btn-primary" value="Sign Up"/>
-                </div>
-              </div>
-        </form>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-    <script>
-      $(document).ready(function() {
-
-      });
-    </script>
-</body>
-
-</html>

@@ -2,9 +2,9 @@
 
 require __DIR__.'/./vendor/autoload.php';
 require './config.php';
-require './helpers/boot.php';
+require './classes/boot.php';
 
-require_once './helpers/session.php';
+require_once './classes/session.php';
 
 
 use Illuminate\Validation\Factory as ValidatorFactory;
@@ -21,11 +21,10 @@ $session = new Session();
 $session->redirectIfAuth('./admin/index.php','./trainer/index.php','./doctor/index.php','./index.php');
 
 $factory = new ValidatorFactory(new Translator('en'));
-$messages = getErrorMessages();
 
 if(isset($_POST['type'])){
   $type = $_POST['type'];
-  
+
   if($type=="login"){
 
     $validator = $factory->make($_POST, ['phone'=>'required','password'=>'required'],$messages);
@@ -33,7 +32,7 @@ if(isset($_POST['type'])){
     if($validator->passes()) {
       $u = User::where('phone',$_POST['phone'])->where('password',$_POST['password'])->first();
       if($u){
-        
+
         $session->logIn($u->id, $u->type);
         $out['status'] = "success";
 
@@ -65,8 +64,8 @@ if(isset($_POST['type'])){
       }else{
         if($u = User::create($_POST)){
 
-        session->logIn($u->id, $u->type);
-          
+        $session->logIn($u->id, $u->type);
+
         }else{
           $error = ERROR_DB;
         }
@@ -81,6 +80,6 @@ if(isset($_POST['type'])){
  $out['error'] = "type not set.";
 }
 
-echo json_encode($out,TURE);
+echo json_encode($out,TRUE);
 
  ?>

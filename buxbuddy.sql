@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2016 at 06:27 PM
+-- Generation Time: Apr 21, 2016 at 06:47 PM
 -- Server version: 10.1.8-MariaDB
 -- PHP Version: 5.6.14
 
@@ -19,6 +19,33 @@ SET time_zone = "+00:00";
 --
 -- Database: `buxbuddy`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `fromid` int(11) NOT NULL,
+  `toid` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `groupid` int(11) NOT NULL,
+  `status` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `requests`
+--
+
+CREATE TABLE `requests` (
+  `fromid` int(11) NOT NULL,
+  `transid` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `groupid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 

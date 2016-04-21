@@ -1,6 +1,10 @@
 <?php
 
+
 $json = file_get_contents('php://input');
+
+echo $json;
+
 $_POST = json_decode($json,TRUE);
 
 $out['values'] = $_POST;

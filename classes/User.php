@@ -7,11 +7,11 @@ class User extends Model {
 
 
 	public $timestamps = false;
-	protected $table = 'autism_users';
+	protected $table = 'user';
 	protected $fillable = ['name','phone','password'];
 
 	protected $hidden = ['password'];
-	
+
 
 
 }
